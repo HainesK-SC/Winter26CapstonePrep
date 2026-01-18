@@ -13,20 +13,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Debug - confirm pom.xml location
+        run: |
+          pwd
+          ls -la
+          find . -maxdepth 4 -name "pom.xml" -print
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "21"
+          java-version: "17"
           cache: maven
 
-      - name: Run tests
-        run: mvn -B clean verify
+      - name: Run tests (Maven in app/)
+        working-directory: app
+        run: mvn -B -e clean verify
 
-      - name: Upload reports (optional)
+      - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-reports
           path: |
-            target/surefire-reports
-            target/failsafe-reports
+            app/target/surefire-reports
+            app/target/failsafe-reports
