@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ "development", "main" ]
+  push:
+    branches: [ "development", "main" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Run tests
+        run: mvn -B clean verify
+
+      - name: Upload reports (optional)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            target/surefire-reports
+            target/failsafe-reports
